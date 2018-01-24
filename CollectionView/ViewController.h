@@ -8,7 +8,11 @@
 
 #import <UIKit/UIKit.h>
 
-@interface ViewController : UIViewController
+@interface ViewController : UICollectionViewController
+
+@property (nonatomic, strong) UIBarButtonItem *addButton;
+@property (nonatomic, strong) UIBarButtonItem *deleteButton;
+@property (nonatomic, strong) NSMutableArray *collectionData;
 
 
 @end
