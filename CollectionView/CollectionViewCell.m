@@ -11,7 +11,17 @@
 @implementation CollectionViewCell
 
 - (void)setEditing:(BOOL)Editing {
-    _Editing = Editing;
+    _isEditing = Editing;
+    [_selectionImage setHidden:NO];
+}
+
+- (void)setSelected:(BOOL)selected {
+    [super setSelected:selected];
+    if (selected) {
+        _selectionImage.image = [UIImage imageNamed:@"Checked"];
+    } else {
+        _selectionImage.image = [UIImage imageNamed:@"Unchecked"];
+    }
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
@@ -28,6 +38,7 @@
         _selectionImage.image = [UIImage imageNamed:@"Unchecked.png"];
         _selectionImage.contentMode = UIViewContentModeScaleAspectFit;
         _selectionImage.translatesAutoresizingMaskIntoConstraints = false;
+        [_selectionImage setHidden:YES];
         
         [self addSubview: _titleLabel];
         [self addSubview: _selectionImage];

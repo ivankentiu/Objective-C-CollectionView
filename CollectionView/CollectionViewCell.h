@@ -12,6 +12,6 @@
 
 @property (strong, nonatomic) UILabel *titleLabel;
 @property (strong , nonatomic) UIImageView *selectionImage;
-@property (nonatomic) BOOL Editing;
+@property (nonatomic) BOOL isEditing;
 
 @end

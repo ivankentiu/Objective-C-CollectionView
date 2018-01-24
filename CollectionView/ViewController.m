@@ -22,6 +22,7 @@
     [_collectionData addObjectsFromArray: @[@"1 📲", @"2 🌲", @"3 🐙", @"4 🏀", @"5 🎤"]];
     
     _addButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem: UIBarButtonSystemItemAdd target: self action: @selector(addItem)];
+    _deleteButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem: UIBarButtonSystemItemTrash target: self action: @selector(deleteSelection)];
     
     self.collectionView.backgroundColor = [UIColor whiteColor];
     self.collectionView.delegate = self;
@@ -37,12 +38,31 @@
     self.collectionView.refreshControl = refresh;
     
     self.navigationItem.rightBarButtonItem = _addButton;
-//    self.view.backgroundColor = [UIColor whiteColor];
-//    self.textField = [[UITextField alloc] initWithFrame:CGRectMake(10.0f, 30.0f, 300.0f, 30.0f)];
-//    self.textField.borderStyle = UITextBorderStyleRoundedRect;
-//    [self.view addSubview:self.textField];
+    self.navigationItem.leftBarButtonItem = self.editButtonItem;
+    self.toolbarItems = @[_deleteButton];
+    [self.navigationController setToolbarHidden:YES];
+
+}
+
+- (void)setEditing:(BOOL)editing {
+    [super setEditing:editing];
+    [_addButton setEnabled:!editing];
+    [_deleteButton setEnabled:editing];
+    self.collectionView.allowsMultipleSelection = editing;
     
-    // Do any additional setup after loading the view, typically from a nib.
+    NSArray *indexes = self.collectionView.indexPathsForVisibleItems;
+    
+    for (NSIndexPath *index in indexes) {
+        CollectionViewCell *cell = (CollectionViewCell *)[self.collectionView cellForItemAtIndexPath:index];
+        cell.isEditing = editing;
+    }
+    
+    if (!editing) {
+        [self.navigationController setToolbarHidden:YES];
+    } else {
+        [self.navigationController setToolbarHidden:NO];
+    }
+    
 }
 
 - (void) addItem {
@@ -61,6 +81,10 @@
     [self addItem];
 }
 
+- (void) deleteSelection {
+   
+}
+
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
@@ -70,6 +94,7 @@
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
     CollectionViewCell *cell = [self.collectionView dequeueReusableCellWithReuseIdentifier: cellId forIndexPath: indexPath];
     cell.titleLabel.text = [_collectionData objectAtIndex: indexPath.item];
+    cell.isEditing = self.isEditing;
     return cell;
 }
 
@@ -78,9 +103,23 @@
 }
 
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
-    DetailsViewController *detailsViewController = [[DetailsViewController alloc] init];
-    detailsViewController.selection = [_collectionData objectAtIndex: indexPath.item];
-    [self.navigationController pushViewController: detailsViewController animated: true];
+    if (!self.isEditing) {
+        DetailsViewController *detailsViewController = [[DetailsViewController alloc] init];
+        detailsViewController.selection = [_collectionData objectAtIndex: indexPath.item];
+        [self.navigationController pushViewController: detailsViewController animated: true];
+    } else {
+        [self.navigationController setToolbarHidden:NO];
+    }
+   
+}
+
+- (void)collectionView:(UICollectionView *)collectionView didDeselectItemAtIndexPath:(NSIndexPath *)indexPath {
+    if (self.isEditing) {
+        NSArray *selected = collectionView.indexPathsForSelectedItems;
+        if (selected.count == 0) {
+            [self.navigationController setToolbarHidden:YES];
+        }
+    }
 }
 
 @end
